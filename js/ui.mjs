@@ -1,3 +1,4 @@
+import { normalizeProducts } from "./utils.mjs"
 
 export async function loadTemplate(path) {
     const res = await fetch(path)
@@ -21,11 +22,18 @@ export async function renderHeaderFooter() {
 export function renderNavBar() {
     const hamburger = document.querySelector(".hamburger")
     const nav = document.querySelector(".navigation")
+    const btn_search = document.querySelector(".search")
+    const nav_search = document.querySelector(".navigation__search")
 
     hamburger.addEventListener("click", () => {
         hamburger.classList.toggle("active")
         nav.classList.toggle("show")
     })
+
+    btn_search.addEventListener("click", () => {
+        nav_search.classList.toggle("show")
+    })
+
 }
 
 export function renderCopy() {
@@ -51,7 +59,7 @@ export function renderListWithTemplate(templateFn, parentE, list, clear=false) {
 
 export function renderCardProduct(product) {
     return `<div class="product-card">
-                <h2 class="card__store">${product.source}</h2>
+    ${product.source ? `<h2 class="card__store">${product.source}</h2>` : ""}
                 <img src="${product.image}" />
                 
                 <h3 class="card__title">${product.title}</h3>
@@ -70,65 +78,77 @@ export function filterFakeStore(category, data) {
 
 export function filterDummy(category, data) {
     if(category === "men's clothing") {
-        return data.filter(p => p.category === "mens-shirts" || p.category === "mens-shoes")
+        const order = {
+            "womens-bags": 1,
+            "mens-shirts": 2
+        }
+        const dataFiltered = data.filter(p => 
+            (p.category === "womens-bags" && p.price < 130 && p.price > 100) ||
+            (p.category === "mens-shirts" && p.price < 30))
+        
+        return [...dataFiltered].sort((a, b) => order[a.category] - order[b.category])
     }
         
     if (category === "women's clothing") {
-        return data.filter(p => p.category === "womens-dresses" || p.category === "tops")
+        return data.filter(p => p.category === "tops")
     }
 
     if (category === "electronics") {
-        return data.filter(p => 
-            p.category === "laptops" || 
-            p.category === "smartphones" ||
-            p.category === "mobile-accesories"
-        );
+        return data.filter(p => p.category === "mobile-accessories");
     }
 
     if (category === "jewelery") {
+        const order = {
+            "womens-bags": 1,
+            "womens-watches": 2,
+            "womens-jewellery": 3
+        };
+
         return data.filter(p =>
-            p.category === "mens-watches" || 
-            p.category === "womens-watches"
-        );
+            (p.category === "womens-bags" && p.price >= 500) ||
+            (p.category === "womens-watches" && p.price <= 200) ||
+            (p.category === "womens-jewellery" && p.price <= 25)
+        ).sort((a, b) => order[a.category] - order[b.category])
     }
-            
+}
+
+export function createComparisonRow(fake, dummy) {
+    const t_fake = renderCardProduct(fake)
+    const t_dummy = renderCardProduct(dummy)
+
+    const row = document.createElement("div")
+    const div_action = document.createElement("div")
+    const btn = document.createElement("button")
+    btn.textContent = "Compare"
+    btn.classList.add("card__btn")
+
+    row.classList.add("compare-row")
+    div_action.classList.add("compare-action")
+
+    div_action.appendChild(btn)
+
+    renderWithTemplate(t_fake, row)
+    row.appendChild(div_action)
+    renderWithTemplate(t_dummy, row)
     
+    return row
 }
 
 export function renderComparison(container, fakeFil, dummyFil) {
     container.innerHTML = "";
 
     const total = Math.min(fakeFil.length, dummyFil.length)
-    
+
     for (let i = 0; i < total; i++) {
-        const row = document.createElement("div")
-        row.classList.add("compare-row")
-
-        row.innerHTML = `
-            <div class="product-card fake">
-                <img src="${fakeFil[i].image}">
-                <h3 class="card__title">${fakeFil[i].title}</h3>
-                <p class="card__price">$${fakeFil[i].price}</p>
-                <p class="card__rating">⭐ ${fakeFil[i].rating.rate}</p>
-            </div>
-
-            <div class="compare-action">
-                <button class="card__btn">Compare</button>
-            </div>
-
-            <div class="product-card dummy">
-                <img src="${dummyFil[i].thumbnail}">
-                <h3 class="card__title">${dummyFil[i].title}</h3>
-                <p class="card__price">$${dummyFil[i].price}</p>
-                <p class="card__rating">⭐ ${dummyFil[i].rating}</p>
-            </div>
-
-            
-    `;
-
-        container.appendChild(row);
+        container.appendChild(createComparisonRow(normalizeProducts(fakeFil[i]), normalizeProducts(dummyFil[i])));
     }
 }
+
+export function renderSingleComparison(container, fake, dummy) {
+    container.innerHTML = ""
+    container.appendChild(createComparisonRow(fake, dummy))
+}
+
 
 export function getComparisonResult(a, b) {
     return {
@@ -136,27 +156,27 @@ export function getComparisonResult(a, b) {
         betterRating: compareRating(a, b),
         betterValue: compareValue(a, b)
     }
+
+    function comparePrice(a, b) {
+        if(a.price < b.price) return a.source
+        if(b.price < a.price) return b.source
+
+        return "Draw"
+    }
+    function compareRating(a, b) {
+        if(a.rating > b.rating) return a.source
+        if(a.rating < b.rating) return b.source
+
+        return "Same Rating"
+    }
+    function compareValue(a, b) {
+        const valueA = a.rating / a.price
+        const valueB = b.rating / b.price
+
+        if (valueA > valueB) return a.source
+        if (valueB > valueA) return b.source
+                
+        return "Draw"
+    }
 }
 
-function comparePrice(a, b) {
-    if(a.price < b.price) return a.source
-    if(b.price < a.price) return b.source
-
-    return "Draw"
-}
-function compareRating(a, b) {
-    if(a.rating > b.rating) return a.source
-    if(a.rating < b.rating) return b.source
-
-    return "Same Rating"
-}
-
-function compareValue(a, b) {
-    const valueA = a.rating / a.price
-    const valueB = b.rating / b.price
-
-    if (valueA > valueB) return a.source
-    if (valueB > valueA) return b.source
-            
-    return "Draw"
-}

@@ -1,20 +1,6 @@
 import { pricePercent, ratingPercent } from "./comparisonBars.js";
-import { renderWithTemplate, renderCardProduct, getComparisonResult } from "./ui.mjs"
-
-function normalizeProducts(product, source) {
-    return {
-        title: product.title,
-        category: product.category,
-        price: product.price,
-        image: product.image || product.thumbnail,
-        rating: 
-            typeof product.rating === "object"
-            ? product.rating.rate
-            : product.rating,
-        description: product.description,
-        source
-    };
-}
+import { renderSingleComparison, getComparisonResult } from "./ui.mjs"
+import { normalizeProducts } from "./utils.mjs"
 
 export default class CompareProducts {
     constructor(pair, container) {
@@ -27,9 +13,8 @@ export default class CompareProducts {
         let fake = normalizeProducts(this.pair.fake, "FakeStore")
         let dummy = normalizeProducts(this.pair.dummy, "DummyJSON")
         
-        renderWithTemplate(renderCardProduct(fake), this.container)
-        renderWithTemplate(renderCardProduct(dummy), this.container)
-
+        renderSingleComparison(this.container, fake, dummy)
+        
         this.renderResult(fake, dummy)
     }
 

@@ -1,5 +1,5 @@
-import { filterDummy, filterFakeStore, renderComparison } from "./ui.mjs"
-import { getLocalStorage, setLocalStorage } from "./utils.mjs"
+import { filterDummy, filterFakeStore, renderComparison, renderSingleComparison } from "./ui.mjs"
+import { normalizeProducts, setLocalStorage } from "./utils.mjs"
 
 export default class ProductList {
     constructor(dataSource, listElement) {
@@ -10,13 +10,14 @@ export default class ProductList {
     async init() {
         const data = await this.dataSource.loadProducts()
 
+        this.searchItem(data)
         this.renderCategory(data)
     }
         
     renderCategory(data) {
         const choices = document.querySelectorAll('input[name="category"]')
         
-        choices.forEach(radio => {
+        choices.forEach((radio) => {
             radio.addEventListener("change", () => {
                 let value = radio.value
                 
@@ -47,5 +48,33 @@ export default class ProductList {
             location.href = "compare.html";
         }
         
+    }
+
+    searchItem(data) {
+        const nav_search = document.getElementById("input_search")
+        nav_search.addEventListener("input", e => {
+            let title = e.target.value
+            
+            const fake = normalizeProducts(data.fakeProducts.find(item => item.title.includes(title)))
+            const dummy = normalizeProducts(data.dummyProducts.find(item => item.title.includes(title)))
+            
+            renderSingleComparison(this.listElement, fake, dummy)
+            toCompare()
+
+            function toCompare() {
+                const btnCompare = document.querySelector(".card__btn")
+                btnCompare.addEventListener("click", () => {
+                    const pair = {
+                        fake: fake,
+                        dummy: dummy
+                    }
+                    actionAdd(pair)
+                })
+                function actionAdd(pair) {
+                    setLocalStorage("comparePair", pair)
+                    location.href = "compare.html";
+                }
+            }
+        })
     }
 }

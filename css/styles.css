@@ -104,6 +104,29 @@ img {
 }
 
 /********* NAVIGATION ********/
+.navigation__search {
+    opacity: 0; 
+    max-height: 0;
+    overflow: hidden;
+
+    padding: 0 2rem;
+    margin-bottom: .5rem;
+
+    .search__input {
+        width: 100%;
+        border: 1px solid #ccc;
+        padding: .6rem .5rem;
+        font-size: 1.1rem;
+
+        &:focus {
+            outline: none;
+            border-bottom: 1.5px solid black;
+        }
+        &::placeholder {
+            color: black;
+        }
+    }
+}
 .navigation {
     opacity: 0;
     max-height: 0;
@@ -147,7 +170,8 @@ img {
     }
 } 
 
-.navigation.show {
+.navigation.show,
+.navigation__search.show {
     opacity: 1;
     max-height: 300px;
 }
@@ -194,7 +218,7 @@ img {
                          "compare";
     gap: 1rem;
 
-    @media screen and (min-width: 794px) {
+    @media screen and (min-width: 1508px) {
         grid-template-areas: "products compare";
         margin: auto;
         max-width: 1600px;
@@ -205,8 +229,8 @@ img {
     border-radius: .8rem;
     border: 1px solid #a6a6a6;
     display: grid;
-    gap: .1rem;
     align-items: center;
+    gap: .2rem;
 
     @media screen and (min-width: 1015px) {
         grid-template-columns: 1fr auto 1fr;
@@ -221,6 +245,19 @@ img {
         grid-template-columns: repeat(2, 1fr);
         
     }
+
+    .product-card {
+        .card__category {
+            display: inline-block
+        }
+        .card__description {
+            display: block;
+        }
+    }
+
+    .compare-action {
+        display: none;
+    }
 }
 
 .compare-action {
@@ -229,7 +266,7 @@ img {
 }
 
 .product-card {
-    max-width: 600px;
+    max-width: 500px;
     padding: 1rem;
     line-height: 1.5;
     text-align: center;
@@ -251,13 +288,13 @@ img {
     }
     .card__category {
         padding: .2rem .5rem;
-        display: inline-block;
+        display: none;
         font-style: oblique;
         font-size: 1.1rem;
         font-weight: bold;
         margin: 1rem 0;
         color: var(--primary-color);
-        box-shadow: 7px 6px 5px rgba(0, 12, 80, 0.1)  ;
+        box-shadow: 7px 6px 5px rgba(0, 12, 80, 0.1);
     }
     .card__price {
         color: var(--green-price);
@@ -274,6 +311,7 @@ img {
     }
     .card__description {
         margin: .9rem 0;
+        display: none;
     }
 }
 
@@ -282,7 +320,7 @@ img {
     border: 1px solid rgb(34, 34, 34);
     border-radius: 6px;
     box-shadow: 2px 5px 10px black;
-    margin: 1.5rem auto 0;
+    margin: 1.2rem auto 0;
     padding: 1rem 4rem;
     font-size: 1.5rem;
     font-variant: small-caps;
