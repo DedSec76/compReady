@@ -45,7 +45,7 @@ export default class ProductList {
 
         function actionAdd(pair) {
             setLocalStorage("comparePair", pair)
-            location.href = "compare.html";
+            location.href = "./compare.html";
         }
         
     }
@@ -72,7 +72,7 @@ export default class ProductList {
                 })
                 function actionAdd(pair) {
                     setLocalStorage("comparePair", pair)
-                    location.href = "compare.html";
+                    location.href = "./compare.html";
                 }
             }
         })

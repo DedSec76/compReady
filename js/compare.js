@@ -10,7 +10,7 @@ const container = document.querySelector(".compare-products")
 console.log(pair)
 
 if (!pair) {
-    location.href = "/"
+    location.href = "./index.html";
 }
 
 const compareProducts = new CompareProducts(pair, container)
