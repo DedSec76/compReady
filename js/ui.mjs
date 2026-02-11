@@ -139,21 +139,48 @@ export function renderSingleComparison(container, fake, dummy) {
 }
 
 export function getComparisonResult(a, b) {
+    let contA = 0
+    let contB = 0
+
+    const betterPrice = comparePrice(a, b)
+    const betterRating = compareRating(a, b)
+    const betterValue = compareValue(a, b)
+    const winner = getWinner()
+
     return {
-        betterPrice: comparePrice(a, b),
-        betterRating: compareRating(a, b),
-        betterValue: compareValue(a, b)
+        betterPrice,
+        betterRating,
+        betterValue,
+        winner
+    };
+
+    function getWinner() {
+        if (contA > contB) return a.source
+        if (contB > contA) return b.source
+        return "Draw"
     }
 
     function comparePrice(a, b) {
-        if(a.price < b.price) return a.source
-        if(b.price < a.price) return b.source
+        if(a.price < b.price) {
+            contA++
+            return a.source 
+        } 
+        if(b.price < a.price) {
+            contB++
+            return b.source
+        } 
 
         return "Draw"
     }
     function compareRating(a, b) {
-        if(a.rating > b.rating) return a.source
-        if(a.rating < b.rating) return b.source
+        if(a.rating > b.rating) {
+           contA++
+           return a.source
+        } 
+        if(a.rating < b.rating) {
+            contB++
+            return b.source
+        } 
 
         return "Same Rating"
     }
@@ -161,9 +188,14 @@ export function getComparisonResult(a, b) {
         const valueA = a.rating / a.price
         const valueB = b.rating / b.price
 
-        if (valueA > valueB) return a.source
-        if (valueB > valueA) return b.source
-                
+        if (valueA > valueB) {
+            contA+=2
+            return a.source
+        }
+        if (valueB > valueA) {
+            contB+=2
+            return b.source
+        } 
         return "Draw"
     }
 }
