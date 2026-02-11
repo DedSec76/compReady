@@ -46,17 +46,6 @@ export function renderWithTemplate(template, parentElement) {
     parentElement.innerHTML += template
 }
 
-export function renderListWithTemplate(templateFn, parentE, list, clear=false) {
-    const htmlStrings = list.map(item => {
-        return templateFn(item)
-    })
-
-    if(clear) {
-        parentE.innerHTML = "";
-    }
-    parentE.insertAdjacentHTML("afterbegin", htmlStrings.join(''))
-}
-
 export function renderCardProduct(product) {
     return `<div class="product-card">
     ${product.source ? `<h2 class="card__store">${product.source}</h2>` : ""}
@@ -148,7 +137,6 @@ export function renderSingleComparison(container, fake, dummy) {
     container.innerHTML = ""
     container.appendChild(createComparisonRow(fake, dummy))
 }
-
 
 export function getComparisonResult(a, b) {
     return {

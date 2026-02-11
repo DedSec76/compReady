@@ -25,6 +25,7 @@ export default class ProductList {
                 const dummyfil = filterDummy(value, data.dummyProducts)
 
                 renderComparison(this.listElement, fakefil, dummyfil)
+                this.filterPrice(fakefil, dummyfil)
                 this.addToCompare(fakefil, dummyfil)
             })
         }) 
@@ -76,5 +77,26 @@ export default class ProductList {
                 }
             }
         })
+    }
+
+    filterPrice(fakefil, dummyfil) {
+        const minPrice = document.querySelector("input[name='min_price']")
+        const maxPrice = document.querySelector("input[name='max_price']")
+
+        this.fakeOriginal = [...fakefil]
+        this.dummyOriginal = [...dummyfil]
+
+        ;[minPrice, maxPrice].forEach(input => {
+            input.addEventListener("keyup", () => {
+                let valueMin = minPrice.value ? Number(minPrice.value) : 0
+                let valueMax = maxPrice.value ? Number(maxPrice.value) : Infinity
+
+                const filteredFake = this.fakeOriginal.filter(i => i.price >= valueMin && i.price <= valueMax)
+                const filteredDummy = this.dummyOriginal.filter(i => i.price >= valueMin && i.price <= valueMax)
+
+                renderComparison(this.listElement, filteredFake, filteredDummy)
+            })
+        })
+        
     }
 }

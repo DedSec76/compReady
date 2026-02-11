@@ -7,8 +7,6 @@ renderHeaderFooter()
 const pair = getLocalStorage("comparePair")
 const container = document.querySelector(".compare-products")
 
-console.log(pair)
-
 if (!pair) {
     location.href = "./index.html";
 }
