@@ -1,93 +1,68 @@
-import { pricePercent, ratingPercent, valuePercent } from "./comparisonBars.js";
+import { pricePercent, ratingPercent, valuePercent, renderCompareBar } from "./comparisonBars.js";
 import { renderSingleComparison, getComparisonResult, renderCardProduct, renderWithTemplate } from "./ui.mjs"
 import { normalizeProducts } from "./utils.mjs"
 
 export default class CompareProducts {
-    constructor(pair, container) {
+    constructor({pair, container, resultContainer, winnerContainer}) {
         this.pair = pair
         this.container = container
-        this.containerResult = document.querySelector(".compare-result")
+        this.resultContainer = resultContainer
+        this.winnerContainer = winnerContainer
     }
 
     init() {
         let fake = normalizeProducts(this.pair.fake, "FakeStore")
         let dummy = normalizeProducts(this.pair.dummy, "DummyJSON")
+        this.results = getComparisonResult(fake, dummy)
         
         renderSingleComparison(this.container, fake, dummy)
         
-        this.renderResult(fake, dummy)
+        this.renderSummary(fake, dummy)
+        this.showWinner(this.results, fake, dummy)
     }
 
-    renderResult(fake, dummy) {
-        const results = getComparisonResult(fake, dummy)
+    renderSummary(fake, dummy) {
+        
         const price = pricePercent(fake, dummy)
         const rating = ratingPercent(fake, dummy)
         const value = valuePercent(fake, dummy)
 
-        this.containerResult.innerHTML = `
-            <h2 class="title__heading">Results</h2>
+        this.resultContainer.innerHTML = `
+            <h2 class="title__heading">Fast Results</h2>
 
             <div>
-                <p>Price: <span>${results.betterPrice} 💸</span></p>
-                <p>Rating: <span>${results.betterRating} ⭐</span></p>
-                <p>Best Value: <span>${results.betterValue} 🥇</span></p>
+                <p>Price: <span>${this.results.betterPrice} 💸</span></p>
+                <p>Rating: <span>${this.results.betterRating} ⭐</span></p>
+                <p>Best Value: <span>${this.results.betterValue} 🥇</span></p>
             </div>
+
+            <h2 class="title__heading">Details</h2>
         `
-
-        // Bar filling with price attributes
-
-        document.getElementById("nameStore").textContent = `${fake.source}`
-        document.getElementById("nameStore_c").textContent = `${dummy.source}`
-
-        document.querySelector(".fill.fake").style.width = `${price.a}%`;
-        document.querySelector(".fill.dummy").style.width = `${price.b}%`;
-
-        document.getElementById("bar_price_f").textContent = `$${fake.price}`
-        document.getElementById("bar_price_d").textContent = `$${dummy.price}`
-    
-        // Bar filling with rating attributes
-        document.getElementById("nameStore_r").textContent = `${fake.source}`
-        document.getElementById("nameStore_c_r").textContent = `${dummy.source}`
-
-        document.querySelector(".fill_r.fake").style.width = `${rating.a}%`;
-        document.querySelector(".fill_r.dummy").style.width = `${rating.b}%`;
-
-        document.getElementById("bar_rating_f").textContent = `⭐${fake.rating}`
-        document.getElementById("bar_rating_d").textContent = `⭐${dummy.rating}`
-    
-        // Bar filling with value attributes
-        document.getElementById("nameStore_v").textContent = `${fake.source}`
-        document.getElementById("nameStore_c_v").textContent = `${dummy.source}`
-
-        document.querySelector(".fill_v.fake").style.width = `${value.a}%`;
-        document.querySelector(".fill_v.dummy").style.width = `${value.b}%`;
-
-        document.getElementById("bar_value_f").textContent = `${value.a} %`
-        document.getElementById("bar_value_d").textContent = `${value.b} %`
-
-        this.showWinner(results, fake,dummy)
+        renderWithTemplate(renderCompareBar("Price", price, `$${fake.price}`, `$${dummy.price}`), this.resultContainer)
+        renderWithTemplate(renderCompareBar("Rating", rating, `${fake.rating}⭐`, `${dummy.rating}⭐`), this.resultContainer)
+        renderWithTemplate(renderCompareBar("Value", value, `${value.a} %`, `${value.b} %`), this.resultContainer)
     }
 
-    showWinner(results, fake, dummy) {
-        let result_win = results.winner
+    showWinner(fake, dummy) {
+        let result_win = this.results.winner
         
         const btn = document.getElementById("showWinner")
         
         btn.onclick = () => {
             btn.style.animation = "none"
-            const winner = document.querySelector(".winner")
-            winner.classList.toggle("show")
+            
+            this.winnerContainer.classList.toggle("show")
 
-            winner.innerHTML = `<h2 class="title__heading">Winner</h2>`
+            this.winnerContainer.innerHTML = `<h2 class="title__heading">Winner</h2>`
             
             if(result_win === "Draw") {
-                winner.innerHTML += "<p>It's draw 🤝</p>"
+                this.winnerContainer.innerHTML += "<p>It's draw 🤝</p>"
                 return
             }
-            if(result_win === "FakeStore") {
-                renderWithTemplate(renderCardProduct(fake), winner)
+            if(result_win === fake.source) {
+                renderWithTemplate(renderCardProduct(fake), this.winnerContainer)
             } else {
-                renderWithTemplate(renderCardProduct(dummy), winner)
+                renderWithTemplate(renderCardProduct(dummy), this.winnerContainer)
             }
         }
     }
