@@ -1,6 +1,7 @@
 import { pricePercent, ratingPercent, valuePercent, renderCompareBar } from "./comparisonBars.js";
 import { renderSingleComparison, getComparisonResult, renderCardProduct, renderWithTemplate } from "./ui.mjs"
 import { normalizeProducts } from "./utils.mjs"
+import StorageManager  from "./localStorage.mjs"
 
 export default class CompareProducts {
     constructor({pair, container, resultContainer, winnerContainer}) {
@@ -16,9 +17,22 @@ export default class CompareProducts {
         this.results = getComparisonResult(fake, dummy)
         
         renderSingleComparison(this.container, fake, dummy)
+
+        // Add event listeners for "Read More" buttons
+        const buttons = this.container.querySelectorAll(".read-more");
+        buttons.forEach(btn => {
+            btn.addEventListener("click", () => {
+                const text = btn.previousElementSibling
+
+                text.classList.toggle("expanded")
+                btn.textContent = text.classList.contains("expanded")
+                    ? "Read Less"
+                    : "Read More";
+            })
+        });
         
         this.renderSummary(fake, dummy)
-        this.showWinner(this.results, fake, dummy)
+        this.showWinner(fake, dummy)
     }
 
     renderSummary(fake, dummy) {
@@ -59,11 +73,15 @@ export default class CompareProducts {
                 this.winnerContainer.innerHTML += "<p>It's draw 🤝</p>"
                 return
             }
+
             if(result_win === fake.source) {
+                StorageManager.saveWinner(fake)
                 renderWithTemplate(renderCardProduct(fake), this.winnerContainer)
             } else {
+                StorageManager.saveWinner(dummy)
                 renderWithTemplate(renderCardProduct(dummy), this.winnerContainer)
             }
+            window.scrollTo(0, this.winnerContainer.offsetTop)
         }
     }
 }

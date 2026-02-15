@@ -1,5 +1,6 @@
 import { filterDummy, filterFakeStore, renderComparison, renderSingleComparison } from "./ui.mjs"
-import { normalizeProducts, setLocalStorage } from "./utils.mjs"
+import { normalizeProducts } from "./utils.mjs"
+import StorageManager from "./localStorage.mjs"
 
 export default class ProductList {
     constructor(dataSource, listElement) {
@@ -9,20 +10,23 @@ export default class ProductList {
 
     async init() {
         const data = await this.dataSource.loadProducts()
+        
+        this.fake = data.fakeProducts
+        this.dummy = data.dummyProducts
 
         this.searchItem(data)
-        this.renderCategory(data)
+        this.renderCategory()
     }
         
-    renderCategory(data) {
+    renderCategory() {
         const choices = document.querySelectorAll('input[name="category"]')
         
         choices.forEach((radio) => {
             radio.addEventListener("change", () => {
                 let value = radio.value
                 
-                const fakefil = filterFakeStore(value, data.fakeProducts)
-                const dummyfil = filterDummy(value, data.dummyProducts)
+                const fakefil = filterFakeStore(value, this.fake)
+                const dummyfil = filterDummy(value, this.dummy)
 
                 renderComparison(this.listElement, fakefil, dummyfil)
                 this.filterPrice(fakefil, dummyfil)
@@ -45,8 +49,9 @@ export default class ProductList {
         })
 
         function actionAdd(pair) {
-            setLocalStorage("comparePair", pair)
+            StorageManager.savePair(pair)
             location.href = "./compare.html";
+            StorageManager.incrementCompareCount();
         }
         
     }
@@ -72,7 +77,7 @@ export default class ProductList {
                     actionAdd(pair)
                 })
                 function actionAdd(pair) {
-                    setLocalStorage("comparePair", pair)
+                    StorageManager.savePair(pair)
                     location.href = "./compare.html";
                 }
             }

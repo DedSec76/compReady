@@ -57,6 +57,7 @@ export function renderCardProduct(product) {
 
                 <p class="card__rating">${product.rating}</p>
                 <p class="card__description">${product.description}</p>
+                <button class="read-more">Read More</button>
             </div>
             `
 }

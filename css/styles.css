@@ -237,28 +237,6 @@ img {
     }
 }
 
-.compare-products {
-    display: grid;
-    
-    @media screen and (min-width: 650px) {
-        grid-template-columns: repeat(2, 1fr);
-        
-    }
-
-    .product-card {
-        .card__category {
-            display: inline-block
-        }
-        .card__description {
-            display: block;
-        }
-    }
-
-    .compare-action {
-        display: none;
-    }
-}
-
 .compare-action {
     display: flex;
     justify-content: center;
@@ -312,6 +290,9 @@ img {
         margin: .9rem 0;
         display: none;
     }
+    .read-more {
+        display: none;
+    }
 }
 
 .card__btn {
@@ -347,15 +328,12 @@ img {
     max-width: 1200px;
     padding: 0 2rem;
     margin: auto;
-
-    .card__btn {
-        animation: .6s ease-in-out 0s infinite alternate jump;
-
-        &:focus{
-            animation: none;
-        }
+    
+    @media screen and (min-width: 700px) {
+        display: grid;
+        grid-template-columns: auto auto;
+        gap: 2rem;
     }
-
 
     h1 {
         grid-column-start: 1;
@@ -364,21 +342,48 @@ img {
         margin-bottom: .6rem;
     }
 
-    @media screen and (min-width: 700px) {
-        grid-template-columns: auto 300px;
-    }
-
+    /*****  COMPARE PRODUCTS *****/
     .compare-products {
-        grid-template-columns: 1fr;
+        .compare-row {
 
-        @media screen and (min-width: 700px) {
-
+            @media screen and (min-width: 980px) {
+                align-items: flex-start;
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         .product-card {
-            max-width: none;
+            max-width: 700px;
+
+            .card__category {
+                display: inline-block
+            }
+
+            .card__description {
+                /*display: block;*/
+                display: -webkit-box;
+                -webkit-line-clamp: 3;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+
+                &.expanded {
+                    -webkit-line-clamp: unset;
+                }
+            }
+            .read-more {
+                display: block;
+                font-size: .8rem;
+                color: blue;
+                text-decoration: underline;
+            }
+        }
+
+        .compare-action {
+            display: none;
         }
     }
+
+    /*****  COMPARE PRODUCTS END *****/
 
     .compare-result {
         margin-top: .8rem;
@@ -428,6 +433,33 @@ img {
         }
         
     }
+
+    /*****  BTN SHOW WINNER *****/
+    .card__btn {
+        animation: .6s ease-in-out 0s infinite alternate jump;
+
+        @media screen and (min-width: 700px) {
+            display: inline-block;
+            grid-column-start: 2; /* 1, 2*/
+            grid-column-end: 3;
+
+            grid-row-start: 3;
+            grid-row-end: 4;
+        }
+
+        &:focus{
+            animation: none;
+        }
+    }
+
+    /*****  SHOW DIV WINNER *****/
+    .winner.show {
+        display: block;
+        margin: 3rem auto;
+        grid-column-start: 2;
+        grid-column-end: 3;
+    }
+
 }
 .title__heading {
     padding: .5rem 0;
@@ -437,39 +469,6 @@ img {
     text-align: center;
     font-size: 1.5rem;
     margin: 1rem 0;
-}
-
-
-
-/******* Product Listing Page ********/
-.only-card {
-    max-width: 800px;
-    text-align: center;
-    margin: auto;
-    line-height: 2;
-
-    img {
-        width: 100%;
-        max-width: 15rem;
-        height: auto;
-    }
-}
-
-/******* Footer ********/
-.footer-main {
-    border-top: 1px solid #b6b6b6;
-    margin: 2rem 0;
-    padding-top: 1rem;
-
-    p {
-        font-size: 1.1rem;
-        text-align: center;
-        line-height: 1.8;
-    }
-
-    #lastModified {
-        color: var(--primary-color);
-    }
 }
 
 /* Compare Bar */
@@ -568,8 +567,35 @@ img {
     }
 }
 
-.winner.show {
-    display: block;
-    margin: 3rem auto;
+
+/******* Product Listing Page ********/
+.only-card {
+    max-width: 800px;
+    text-align: center;
+    margin: auto;
+    line-height: 2;
+
+    img {
+        width: 100%;
+        max-width: 15rem;
+        height: auto;
+    }
 }
 
+
+/******* Footer ********/
+.footer-main {
+    border-top: 1px solid #b6b6b6;
+    margin: 2rem 0;
+    padding-top: 1rem;
+
+    p {
+        font-size: 1.1rem;
+        text-align: center;
+        line-height: 1.8;
+    }
+
+    #lastModified {
+        color: var(--primary-color);
+    }
+}
