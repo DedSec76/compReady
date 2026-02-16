@@ -9,20 +9,24 @@ export default class StorageManager {
         return JSON.parse(localStorage.getItem("comparePair"))
     }
 
+    static saveLastPair(pair) {
+        let history = JSON.parse(localStorage.getItem("comparisonHistory")) || []
+
+        history.push(pair);
+
+        localStorage.setItem("comparisonHistory", JSON.stringify(history))
+    }
+
+    static getLastPair() {
+        return JSON.parse(localStorage.getItem("comparisonHistory"))
+    }
+
     static saveWinner(winner) {
         localStorage.setItem("lastWinner", JSON.stringify(winner))
     }
 
     static getWinner() {
         return JSON.parse(localStorage.getItem("lastWinner"))
-    }
-
-    static saveHistory(history) {
-        localStorage.setItem("history", JSON.stringify(history))
-    }
-
-    static getHistory() {
-        return JSON.parse(localStorage.getItem("history")) || []
     }
 
     static incrementCompareCount() {

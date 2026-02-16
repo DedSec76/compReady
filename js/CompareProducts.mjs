@@ -12,11 +12,11 @@ export default class CompareProducts {
     }
 
     init() {
-        let fake = normalizeProducts(this.pair.fake, "FakeStore")
-        let dummy = normalizeProducts(this.pair.dummy, "DummyJSON")
-        this.results = getComparisonResult(fake, dummy)
+        this.fake = this.pair.fake
+        this.dummy = this.pair.dummy
+        this.results = getComparisonResult(this.fake, this.dummy)
         
-        renderSingleComparison(this.container, fake, dummy)
+        renderSingleComparison(this.container, this.fake, this.dummy)
 
         // Add event listeners for "Read More" buttons
         const buttons = this.container.querySelectorAll(".read-more");
@@ -31,15 +31,15 @@ export default class CompareProducts {
             })
         });
         
-        this.renderSummary(fake, dummy)
-        this.showWinner(fake, dummy)
+        this.renderSummary()
+        this.showWinner()
     }
 
-    renderSummary(fake, dummy) {
+    renderSummary() {
         
-        const price = pricePercent(fake, dummy)
-        const rating = ratingPercent(fake, dummy)
-        const value = valuePercent(fake, dummy)
+        const price = pricePercent(this.fake, this.dummy)
+        const rating = ratingPercent(this.fake, this.dummy)
+        const value = valuePercent(this.fake, this.dummy)
 
         this.resultContainer.innerHTML = `
             <h2 class="title__heading">Fast Results</h2>
@@ -52,12 +52,12 @@ export default class CompareProducts {
 
             <h2 class="title__heading">Details</h2>
         `
-        renderWithTemplate(renderCompareBar("Price", price, `$${fake.price}`, `$${dummy.price}`), this.resultContainer)
-        renderWithTemplate(renderCompareBar("Rating", rating, `${fake.rating}⭐`, `${dummy.rating}⭐`), this.resultContainer)
+        renderWithTemplate(renderCompareBar("Price", price, `$${this.fake.price}`, `$${this.dummy.price}`), this.resultContainer)
+        renderWithTemplate(renderCompareBar("Rating", rating, `${this.fake.rating}⭐`, `${this.dummy.rating}⭐`), this.resultContainer)
         renderWithTemplate(renderCompareBar("Value", value, `${value.a} %`, `${value.b} %`), this.resultContainer)
     }
 
-    showWinner(fake, dummy) {
+    showWinner() {
         let result_win = this.results.winner
         
         const btn = document.getElementById("showWinner")
@@ -74,12 +74,12 @@ export default class CompareProducts {
                 return
             }
 
-            if(result_win === fake.source) {
-                StorageManager.saveWinner(fake)
-                renderWithTemplate(renderCardProduct(fake), this.winnerContainer)
+            if(result_win === this.fake.source) {
+                StorageManager.saveWinner(this.fake)
+                renderWithTemplate(renderCardProduct(this.fake), this.winnerContainer)
             } else {
-                StorageManager.saveWinner(dummy)
-                renderWithTemplate(renderCardProduct(dummy), this.winnerContainer)
+                StorageManager.saveWinner(this.dummy)
+                renderWithTemplate(renderCardProduct(this.dummy), this.winnerContainer)
             }
             window.scrollTo(0, this.winnerContainer.offsetTop)
         }

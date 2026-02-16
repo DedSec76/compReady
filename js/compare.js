@@ -9,16 +9,16 @@ const pair = StorageManager.getPair()
 if (!pair) {
    location.href = "./index.html";
 }
-
-StorageManager.savePair(pair)
+const lastComparison = StorageManager.getLastPair()[StorageManager.getLastPair().length - 2]
 
 // We use the stats that we save with localStorage 
 // so that the user keeps their last movements
 document.addEventListener("DOMContentLoaded", () => {
    document.querySelector(".stats").innerHTML = 
-            `<li>Last compared products: ${pair.fake.title}<strong> vs </strong> ${pair.dummy.title}</li>
-            <li>Last winner was: ${StorageManager.getWinner() ? StorageManager.getWinner().title : "None"}</li>
-            <li>You have made ${StorageManager.getCompareCount()} comparisons.</li>
+               
+            `<li>Last compared products: <span>${lastComparison ? `${lastComparison.fake.title} <strong>VS</strong> ${lastComparison.dummy.title}` : "None"}</span></li>
+             <li>Last winner was: <span>${StorageManager.getWinner() ? StorageManager.getWinner().title : "None"}</span></li>
+             <li>You have made: <span>${StorageManager.getCompareCount()} comparisons.</span></li>
             `
 })
 
