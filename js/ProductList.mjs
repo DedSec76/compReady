@@ -136,6 +136,7 @@ export default class ProductList {
                 const filteredDummy = this.dummyOriginal.filter(i => i.price >= valueMin && i.price <= valueMax)
 
                 renderComparison(this.listElement, filteredFake, filteredDummy)
+                this.addToCompare(filteredFake, filteredDummy)
             })
         })
         
